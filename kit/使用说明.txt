@@ -1,0 +1,109 @@
+﻿Magic5 一键提权工具（PC / USB 版）
+========================================
+
+【适用范围】—— 请务必先看这一条
+  机型：荣耀 Magic5  PGT-AN00
+  内核：5.15.180-android13-8-g1c54d617912d
+  系统：与上述内核对应的同一版系统
+
+  模块里的 task_struct / struct module / policydb 偏移、KASLR 常量、
+  符号地址都是针对这一颗内核实测对齐的。换机型、或者系统 OTA 升级过内核，
+  直接跑会 oops 并从内核重启，甚至可能导致数据丢失。脚本会先核对
+  uname -r，不匹配就主动停下来（只有显式加 -Force 才会放行，别乱用）。
+
+
+【怎么用】
+  1. 手机：设置 → 关于手机 → 连点版本号 7 次打开开发者选项
+           → 系统/其他设置 → 开发者选项 → 打开「USB 调试」
+  2. 用数据线连上电脑，解锁屏幕；弹「允许 USB 调试」时勾「一律允许」
+  3. 如果电脑第一次连这台手机，先装 usb_driver 里的驱动（设备管理器里
+     手动更新驱动指向该目录），然后重插数据线
+  4. 双击【一键提权.bat】，等窗口自己跑完（一般 1-2 分钟）
+  5. 打开手机上的 ReSukiSU / BakaSU，应显示「工作中 · LKM · 越狱模式」
+
+  全程不需要在电脑上装 Python、Java、Android SDK 或者 adb —— 工具包里
+  已经自带 adb.exe 和全部载荷，解压到任意目录即可，绿色免安装。
+
+
+【三个入口】
+  一键提权.bat    完整流程：临时 root → 关模块验签 → 导 kallsyms →
+                  按本次开机的 KASLR 重写模块符号 → insmod → 交给管理器
+  仅临时root.bat  只拿到 adb shell 的 root，不加载 KSU 模块。
+                  漏洞本身有概率失败，失败就重跑；窗口只有几分钟
+  查看状态.bat    只读：机型、内核、SELinux、模块状态、管理器状态
+
+  命令行还可以用：
+    tools\kit.ps1 -Status          看状态
+    tools\kit.ps1 -RootOnly        只提权
+    tools\kit.ps1 -Shell           提权后进入交互式 root shell
+    tools\kit.ps1 -Module x.ko     换成另一个已编译好的模块
+  直接运行 ps1 需要 -ExecutionPolicy Bypass，双击 bat 已经处理好了。
+
+
+【它到底做了什么】
+  · 用 GhostLock 漏洞拿到临时 root，同时把模块验签开关 sig_enforce 清 0
+  · 用 root 导出 /proc/kallsyms（约 59 万行）
+  · 把 kernelsu.ko 中 208 个未定义符号改写成「绝对符号 + 本次开机地址」。
+    荣耀内核只导出了一部分符号，不改的话 insmod 会报 Unknown symbol
+  · insmod 装载，KSU 接管 root；管理器随后自己安装 ksud
+
+  注意：这些全部发生在内存和 /data/local/tmp 里，**没有改 boot 分区**。
+  所以每次手机重启后都要重新双击一次【一键提权.bat】。
+
+
+【关于 SELinux】
+  加载完成后系统会留在「宽容模式」（Permissive）。这不是疏漏：
+  这台 Honor 的 SELinux 是华为 HKIP 定制版，KSU 按 AOSP 布局重载策略会
+  把网络包标成 unlabeled，导致 WiFi/数据网络「有信号、有 IP、全都不通」。
+  保持 permissive 是为了让网络正常。代价是系统失去 SELinux 强制保护，
+  日常别装来路不明的 App。重启手机不跑本工具，SELinux 就是正常的 Enforcing。
+
+
+【关于 su】
+  /system/bin/su 本来就不存在，这是 KSU 的设计：sucompat 用 execve 钩子
+  拦下对 su 的调用，但只对「管理器 → 超级用户」里授权过的 uid 生效，
+  未授权的 uid 会落到原路径，表现为 "inaccessible or not found"。
+  电脑上要用临时 root 可以执行：
+      adb shell /data/local/tmp/su -c "id"
+  （加载 KSU 后临时 root 的 helper 可能被 SELinux 收尾杀掉，属于正常现象。）
+  想让某个 App 拿到 root，在管理器的「超级用户」页给它授权即可。
+
+
+【关于管理器版本】
+  内核模块是 35257 / uapi 6，对应手机上已装的
+  ReSukiSU 4.2.0-rc3-86-g516d3e87 (uapi 6)。
+  工具包里附带的 ReSukiSU-4.2.0-rc3.apk 是官方正式版（35171 / uapi 4），
+  只在「手机上一个管理器都没装」时才会自动安装。它功能正常，但可能因为
+  版本号对不上显示一条「需要更新内核」的红条；换回同版本管理器即可消失。
+
+
+【常见问题】
+  · 窗口说「没找到设备」：解锁屏幕 / 重插数据线 / 装 usb_driver /
+    把通知栏的 USB 用途改成「传输文件」；荣耀电脑管家可能占用 5037 端口，
+    脚本会尝试结束 hwtransport.exe 并重启 adb server。
+  · 提示「设备未授权」：手机上点「允许」，勾「一律允许」，再跑一次。
+  · 提权那一步失败：这个漏洞有概率性，直接重跑；连着两次失败就重启手机。
+  · insmod 返回非 0：多半是这次 sig_enforce 没清干净，重启手机重跑。
+  · 跑完之后 USB 掉线：确认手机没锁屏，重插数据线；模块通常还在跑，
+    可以用【查看状态.bat】确认，不用重复提权。
+  · 有任何问题先看工具包目录下自动生成的 kit-<时间>.log，里面记录了
+    每一条 adb 命令和返回码。
+
+
+【目录结构】
+  一键提权.bat / 仅临时root.bat / 查看状态.bat   启动入口
+  tools\kit.ps1          主流程（PowerShell 5.1，Win10/11 自带）
+  tools\adb.exe          自带 adb 及两个依赖 DLL
+  payload\magic5-root.so 单文件 root 载荷（内嵌 exploit/helper/su/su-perm）
+  payload\profile_175.bin 稳定的漏洞参数（prepare_max_attempts=60）
+  payload\ksu-magic5-35257-uapi6.ko  KSU 内核模块（保持 permissive 版）
+  payload\kmsgsync       崩溃时把内核日志同步落盘
+  payload\kit-*.sh       设备端脚本
+  payload\ReSukiSU-4.2.0-rc3.apk  可选的管理器
+  usb_driver\            ADB USB 驱动
+
+
+【安全提示】
+  仅用于你本人拥有的设备。模块加载会改变内核运行行为、关闭 SELinux 强制，
+  存在系统不稳定和数据风险；重要资料请先备份。分发时请连同本说明一起给出，
+  并明确标注适用的机型与内核版本。

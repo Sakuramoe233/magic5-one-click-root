@@ -1,0 +1,39 @@
+# 第三方二进制 / 编译产物 —— 不纳入版本控制，由 GitHub Releases 提供
+# 获取方式见 docs/BINARY_SOURCES.md
+*.ko
+*.so
+*.apk
+*.exe
+*.dll
+*.cat
+*.bin
+*.o
+*.a
+*.zip
+*.gz
+*.tar
+*.7z
+*.png
+*.jpg
+*.jar
+
+# 设备导出的大体积数据与日志
+kallsyms*.txt
+ks-*.txt
+ks[0-9]*.txt
+dmesg*.txt
+kmsg*.log
+*.log
+
+# 工具包运行产物
+kit-*.log
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# 由 Release 包补齐的第三方文件（显式列出，便于核对）
+kit/tools/adb.exe
+kit/tools/AdbWinApi.dll
+kit/tools/AdbWinUsbApi.dll
+kit/usb_driver/
