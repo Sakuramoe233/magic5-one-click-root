@@ -1,6 +1,9 @@
 # Magic5 一键临时提权（PC / USB 版）
 
 > by：Yzrahanabi
+> 成功欢迎打赏，努力适配magic os11
+> <img width="1188" height="1275" alt="赞助" src="https://github.com/user-attachments/assets/f2ba9449-d5ee-469a-b92f-f415e5712071" />
+
 >
 > 仓库：<https://github.com/Sakuramoe233/magic5-one-click-root>
 
