@@ -1,6 +1,6 @@
 # Magic5 一键临时提权（PC / USB 版）
 
-> by：夜空的花火i
+> by：Yzrahanabi
 >
 > 仓库：<https://github.com/Sakuramoe233/magic5-one-click-root>
 
