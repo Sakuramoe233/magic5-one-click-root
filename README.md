@@ -30,7 +30,7 @@
 
 ## 快速开始
 
-1. 从本仓库 [Releases](https://github.com/Sakuramoe233/magic5-one-click-root/releases) 下载 `Magic5一键提权-USB调试版.zip`，解压到任意目录。
+1. 从本仓库 [Releases](https://github.com/Sakuramoe233/magic5-one-click-root/releases) 下载 `Magic5-OneClickRoot-USB-v1.0.0.zip`，解压到任意目录，进入解压出的 `Magic5一键提权-USB版` 文件夹。
 2. 手机：设置 → 关于手机 → 连点版本号 7 次 → 开发者选项 → 打开「USB 调试」。
 3. 数据线连接，解锁屏幕，弹出「允许 USB 调试」时勾选「一律允许」。
 4. 首次连接若电脑没有 ADB 驱动，先装包内 `usb_driver`（设备管理器手动指向该目录）。

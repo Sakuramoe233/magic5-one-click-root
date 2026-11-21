@@ -77,7 +77,9 @@ if (-not $ZipPath -or -not (Test-Path $ZipPath)) {
     return
 }
 
-$zipName = Split-Path $ZipPath -Leaf
+# GitHub 上传 API 会吞掉资产名里的中文字符（实测中文名变成 Magic5.-USB.zip），
+# 因此 Release 资产统一使用 ASCII 名；ZIP 内部的中文目录名不受影响。
+$assetName = 'Magic5-OneClickRoot-USB-v1.0.0.zip'
 $sha = (Get-FileHash -Algorithm SHA256 $ZipPath).Hash.ToLower()
 $size = (Get-Item $ZipPath).Length
 $bodyText = @'
@@ -89,7 +91,7 @@ $bodyText = @'
 - SHA-256：{2}
 
 开源引用见仓库 THIRD_PARTY_NOTICES.md。
-'@ -f $zipName, $size, $sha
+'@ -f $assetName, $size, $sha
 
 $relBody = @{
     tag_name   = $Tag
@@ -102,10 +104,10 @@ $relBody = @{
 $rel = Invoke-RestMethod -Method Post -Uri "$Api/repos/$Owner/$Repo/releases" -Headers $H -Body $relBody -ContentType 'application/json'
 "已创建 Release：$($rel.html_url)"
 
-$enc = [System.Uri]::EscapeDataString($zipName)
+$enc = [System.Uri]::EscapeDataString($assetName)
 $uploadUri = "https://uploads.github.com/repos/$Owner/$Repo/releases/$($rel.id)/assets?name=$enc"
 $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $ZipPath).Path)
 Invoke-RestMethod -Method Post -Uri $uploadUri -Headers $H -ContentType 'application/octet-stream' -Body $bytes -TimeoutSec 600 | Out-Null
-"已上传资产：$zipName"
+"已上传资产：$assetName"
 
 "完成：https://github.com/$Owner/$Repo/releases/tag/$Tag"

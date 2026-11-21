@@ -1,6 +1,6 @@
 # 二进制资产来源与获取方式
 
-本仓库**只收录文本源码与文档**。下面的文件是成品 ZIP（`Magic5一键提权-USB调试版.zip`）中的二进制资产，通过 GitHub Releases 分发，也可按本表从上游 / 源码自行生成。
+本仓库**只收录文本源码与文档**。下面的文件是成品 ZIP（Release 资产 `Magic5-OneClickRoot-USB-v1.0.0.zip`）中的二进制资产，通过 GitHub Releases 分发，也可按本表从上游 / 源码自行生成。
 
 ## 资产清单
 
@@ -42,7 +42,11 @@ kit/payload/ReSukiSU-4.2.0-rc3.apk
 
 ## 打包成 ZIP
 
-补齐二进制后，用任意压缩工具把 `kit/` 整个目录打包，顶层目录改名为 `Magic5一键提权-USB调试版` 即可。注意：
+补齐二进制后，用任意压缩工具把 `kit/` 整个目录打包，顶层目录改名为 `Magic5一键提权-USB版` 即可。
+
+> **Release 资产名请用纯 ASCII**（如 `Magic5-OneClickRoot-USB-v1.0.0.zip`）：GitHub 上传 API 会把资产名里的中文字符吞掉，导致下载到的文件名变成 `Magic5.-USB.zip`。ZIP 内部的中文目录名不受影响。
+
+注意：
 
 - 三个 `.bat` 必须保持 **GBK(cp936) + CRLF**，否则中文窗口标题会乱码；
 - `tools/kit.ps1` 必须保持 **UTF-8 BOM**，否则 PowerShell 5.1 会把中文按 ANSI 读取；
