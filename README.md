@@ -1,7 +1,9 @@
 # Magic5 一键临时提权（PC / USB 版）
 
 > by：Yzrahanabi
->
+>成功欢迎打赏，努力适配OS11
+> <img width="256" height="256" alt="赞助" src="https://github.com/user-attachments/assets/8cd355ee-1b9e-4a5c-89c3-8e406eb0dd7a" />
+
 > 仓库：<https://github.com/Sakuramoe233/magic5-one-click-root>
 
 针对 **荣耀 Magic5（PGT-AN00）某一特定内核构建** 的临时 root 工具。电脑插上 USB 数据线，双击一个批处理，手机由 KernelSU 系（BakaSU / ReSukiSU）接管 root。
