@@ -10,7 +10,7 @@
 
 **不解锁 Bootloader、不刷写 boot 分区、不改动系统分区**，一切只发生在内存与 `/data/local/tmp`。因此**每次手机重启后 root 都会消失，需要重新运行一次**。
 
-本项目是**适配性工程，不是新的漏洞研究**。提权原语完全复用已公开的 [GhostLock](https://github.com/YuKongA/ghostlock-app)（CVE-2026-43499），内核 root 方案来自 [BakaSU / ReSukiSU](https://github.com/Baka-SU/BakaSU) 与 [KernelSU](https://github.com/tiann/KernelSU)。本仓库的工作是把这两者在这台 Honor 内核上跑通：BTF 结构体布局对齐、按本次开机 KASLR 重定位模块符号、关闭模块验签、处理 SELinux 兼容，以及封装一个免安装的 PC 端一键脚本。
+本项目是**适配性工程，不是新的漏洞研究**。提权原语完全复用已公开的 [GhostLock](https://github.com/YuKongA/ghostlock-app)（CVE-2026-43499），内核 root 方案来自 [KernelSU-Next) 与 [KernelSU](https://github.com/tiann/KernelSU)。本仓库的工作是把这两者在这台 Honor 内核上跑通：BTF 结构体布局对齐、按本次开机 KASLR 重定位模块符号、关闭模块验签、处理 SELinux 兼容，以及封装一个免安装的 PC 端一键脚本。
 
 完整的开源引用、许可证与二进制资产来源见 **[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)**。
 
@@ -37,7 +37,7 @@
 3. 数据线连接，解锁屏幕，弹出「允许 USB 调试」时勾选「一律允许」。
 4. 首次连接若电脑没有 ADB 驱动，先装包内 `usb_driver`（设备管理器手动指向该目录）。
 5. 双击 **`一键提权.bat`**，等窗口跑完（约 1–2 分钟）。
-6. 打开手机上的 ReSukiSU / BakaSU，应显示「工作中 · LKM · 越狱模式」。
+6. 打开手机上的 KernelSU-Next，应显示「工作中 · LKM · 越狱模式」。
 
 工具包自带 adb 与全部载荷，**不需要在电脑上安装 Python / Java / Android SDK / adb**，绿色免安装。
 
@@ -61,7 +61,7 @@
 2. 以 root 导出 `/proc/kallsyms`（约 59 万行）—— Honor 内核只导出一部分符号，直接 `insmod` 会报 `Unknown symbol`。
 3. 把 `kernelsu.ko` 中约 208 个未定义符号改写成 `SHN_ABS` 绝对符号，地址取本次开机的 KASLR 实际值。此逻辑已用 PowerShell 在 `kit.ps1` 中重写，PC 端无需 Python。
 4. 后台 `insmod` 装载（异步执行，避免 oops 时 adb 永不返回），KSU 接管 root。
-5. 保持 SELinux **Permissive**：这台 Honor 的 SELinux 是 HKIP 定制策略，KSU 按 AOSP 布局重载策略会把网络包标成 `unlabeled`，导致 WiFi/数据「有信号、有 IP、全都不通」。这是功能取舍，不是疏漏。
+5. 保持 SELinux留在「严格模式」（Enforcing），和原厂一致，并且维持网络正常
 
 技术细节见 [docs/TECHNICAL.md](docs/TECHNICAL.md)，复现编译见 [docs/BUILD.md](docs/BUILD.md)。
 
@@ -74,7 +74,7 @@ kit/          分享即用工具包的文本部分（bat / kit.ps1 / 设备端 s
 scripts/host/     PC 端 Python 工具（kallsyms 补丁、profile 处理、日志抓取等）
 scripts/device/   设备端 shell（取 root、装载、重启后恢复）
 scripts/build/    内核编译与 BTF 布局对齐（_Static_assert 校验）
-scripts/patches/  对上游 BakaSU/KernelSU 源码的适配补丁脚本
+scripts/patches/  对上游 KernelSU-Next 源码的适配补丁脚本
 src/              自研 C 源码（单文件 root 载荷打包器、helper、su、kmsg 同步）
 profiles/         GhostLock HOCON 内核 profile（文本）
 licenses/         上游许可证原文备份
@@ -107,7 +107,7 @@ docs/             使用、构建、技术原理、二进制来源
 - **仅用于你本人拥有、且你有权修改的设备。** 请勿用于他人设备或任何未授权场景。
 - 本项目复用的是**上游已公开**的漏洞利用与 root 方案，不提供任何新的漏洞、不绕过账号/DRM/设备保护机制。
 - 加载内核模块会改变内核运行行为，工具会让 SELinux 停留在 Permissive、关闭模块签名强制，**存在系统不稳定、数据丢失、安全风险**。重要资料请先备份。
-- 工具为「临时」root：不持久化、不写 boot 分区；重启手机且不运行本工具时，系统恢复原状（SELinux 回到 Enforcing）。
+- 工具为「临时」root：不持久化、不写 boot 分区；重启手机且不运行本工具时，系统恢复原状（SELinux  Enforcing）。
 - 作者与贡献者对使用本工具造成的任何损坏、数据丢失或违反厂商条款不承担责任。**使用即表示你已理解并接受上述风险。**
 
 ---
