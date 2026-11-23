@@ -6,7 +6,7 @@
 
 > 仓库：<https://github.com/Sakuramoe233/magic5-one-click-root>
 
-针对 **荣耀 Magic5（PGT-AN00）某一特定内核构建** 的临时 root 工具。电脑插上 USB 数据线，双击一个批处理，手机由 KernelSU 系（BakaSU / ReSukiSU）接管 root。
+针对 **荣耀 Magic5（PGT-AN00）某一特定内核构建** 的临时 root 工具。电脑插上 USB 数据线，双击一个批处理，手机由 KernelSU 系（KernelSU-Next）接管 root。
 
 **不解锁 Bootloader、不刷写 boot 分区、不改动系统分区**，一切只发生在内存与 `/data/local/tmp`。因此**每次手机重启后 root 都会消失，需要重新运行一次**。
 
