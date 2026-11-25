@@ -2,7 +2,7 @@
 
 > by：Yzrahanabi
 >成功欢迎打赏，努力适配OS11
-> <img width="256" height="256" alt="赞助" src="https://github.com/user-attachments/assets/8cd355ee-1b9e-4a5c-89c3-8e406eb0dd7a" /> <img width="256" height="256" alt="15e79eb7c4f9d1a09cd14f259d083a15" src="https://github.com/user-attachments/assets/8c5d0a7b-7cc2-4e63-980f-b5f52fdc3508" />
+><img width="256" height="256" alt="15e79eb7c4f9d1a09cd14f259d083a15" src="https://github.com/user-attachments/assets/8c5d0a7b-7cc2-4e63-980f-b5f52fdc3508" />
 
 > 仓库：<https://github.com/Sakuramoe233/magic5-one-click-root>
 
